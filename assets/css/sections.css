@@ -1,0 +1,488 @@
+/* ============================================================================
+   Section-specific layout.
+   ========================================================================= */
+
+/* ---- 1. hero ------------------------------------------------------------- */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  padding-block: calc(var(--nav-h) + 3rem) clamp(4rem, 10vh, 7rem);
+  overflow: clip;
+}
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  opacity: var(--lattice-opacity);
+  pointer-events: none;
+}
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(13rem, 24vw, 20rem);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  width: 100%;
+}
+@media (max-width: 54rem) {
+  .hero__inner { grid-template-columns: minmax(0, 1fr); }
+}
+
+.hero__eyebrow { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.5rem; }
+.hero__eyebrow::before {
+  content: '';
+  width: 1.75rem;
+  height: 1px;
+  background: var(--accent);
+}
+
+.hero__name {
+  font-size: var(--t-display);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  /* SplitText wraps each char; this keeps the mask clipping tight */
+  overflow-wrap: break-word;
+}
+.hero__name .line { display: block; }
+/* The per-character mask the hero reveal slides out of. */
+.hero__name .char { display: inline-block; will-change: transform, opacity; }
+
+.hero__role {
+  font-size: var(--t-lead);
+  color: var(--ink-2);
+  max-width: 34ch;
+  margin-bottom: 1.1rem;
+  line-height: 1.45;
+}
+.hero__role strong { color: var(--ink-1); font-weight: 550; }
+
+.hero__tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 1.9vw, 1.6rem);
+  line-height: 1.4;
+  color: var(--ink-2);
+  max-width: 44ch;
+  margin-bottom: 2.25rem;
+}
+
+.hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0;
+  margin-bottom: 2.25rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding-block: 1.1rem;
+}
+.hero__fact { padding-right: clamp(1.25rem, 3vw, 2.5rem); }
+.hero__fact + .hero__fact {
+  border-left: 1px solid var(--rule);
+  padding-left: clamp(1.25rem, 3vw, 2.5rem);
+}
+.hero__fact dt { font-size: var(--t-micro); color: var(--ink-3); letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-mono); }
+.hero__fact dd { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; margin-top: 0.2rem; }
+
+.hero__cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/* Portrait: masked reveal, desaturated until hover. */
+.hero__portrait {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--surface-sunken);
+  border: 1px solid var(--rule);
+  /* The reveal animates this clip; it starts fully closed only when JS runs. */
+  clip-path: inset(0 0 0 0 round var(--r-lg));
+}
+.hero__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+  transition: filter var(--dur-slow) var(--ease-out), scale var(--dur-slow) var(--ease-out);
+  will-change: scale;
+}
+.hero__portrait:hover img { filter: grayscale(0) contrast(1); scale: 1.04; }
+/* No photo supplied: the monogram fallback stands in and looks deliberate. */
+.hero__portrait[data-empty='true'] { display: grid; place-items: center; }
+.hero__portrait[data-empty='true'] img { display: none; }
+.hero__monogram {
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, 9vw, 7rem);
+  color: var(--ink-3);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  user-select: none;
+}
+.hero__portrait:not([data-empty='true']) .hero__monogram { display: none; }
+@media (max-width: 54rem) {
+  .hero__portrait { max-width: 13rem; aspect-ratio: 1; border-radius: var(--r-pill); clip-path: none; }
+  .hero__monogram { font-size: 4rem; }
+}
+
+.hero__scroll {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(1.25rem, 4vh, 2.5rem);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--ink-3);
+}
+.hero__scroll-rail {
+  width: 1px;
+  height: 2.5rem;
+  background: var(--rule-strong);
+  position: relative;
+  overflow: hidden;
+}
+.hero__scroll-rail::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  height: 40%;
+  background: var(--accent);
+  animation: rail 2.4s var(--ease-in-out) infinite;
+}
+@keyframes rail {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(250%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__scroll-rail::after { animation: none; transform: translateY(0); height: 100%; opacity: 0.4; }
+}
+
+/* ---- 2. research interests ---------------------------------------------- */
+.interests__statement {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 3vw, 2.35rem);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  max-width: 24ch;
+  color: var(--ink-1);
+}
+.interests__statement em { font-style: italic; color: var(--accent-ink); }
+
+.interests__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.interest {
+  background: var(--surface);
+  padding: clamp(1.5rem, 2.5vw, 2rem);
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+  transition: background-color var(--dur) var(--ease-out);
+  position: relative;
+}
+.interest:hover { background: var(--surface-raised); }
+.interest::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: var(--accent);
+  scale: 1 0;
+  transform-origin: 50% 0;
+  transition: scale var(--dur) var(--ease-out);
+}
+.interest:hover::before { scale: 1 1; }
+.interest[data-primary='true'] .interest__title::after {
+  content: 'Core';
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent-wash);
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--r-sm);
+  margin-left: 0.6rem;
+  vertical-align: 0.15em;
+  white-space: nowrap;
+}
+.interest__title { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.015em; }
+.interest__blurb { color: var(--ink-2); font-size: 0.9375rem; line-height: 1.6; }
+
+/* ---- 3. education -------------------------------------------------------- */
+.degree {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem 2rem;
+  align-items: baseline;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+}
+@media (max-width: 44rem) { .degree { grid-template-columns: minmax(0, 1fr); } }
+.degree__name { font-size: var(--t-h3); font-weight: 600; }
+.degree__sub { color: var(--ink-2); margin-top: 0.3rem; }
+.degree__when { color: var(--ink-3); font-family: var(--font-mono); font-size: var(--t-small); white-space: nowrap; }
+
+.edu__blocks { display: grid; gap: clamp(2rem, 4vw, 3rem); }
+
+/* in-progress callout */
+.callout {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.1rem 1.35rem;
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--r-md);
+  background: var(--accent-wash);
+  font-size: 0.9375rem;
+}
+.callout__dot {
+  flex: none;
+  width: 0.5rem; height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 0.55rem;
+  position: relative;
+}
+.callout__dot::after {
+  content: '';
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  animation: ping 2.6s var(--ease-out) infinite;
+}
+@keyframes ping {
+  0% { opacity: 0.8; scale: 0.6; }
+  70%, 100% { opacity: 0; scale: 1.6; }
+}
+@media (prefers-reduced-motion: reduce) { .callout__dot::after { animation: none; } }
+
+/* ---- 4. experience (pinned) --------------------------------------------- */
+.pinned { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+@media (max-width: 58rem) { .pinned { grid-template-columns: minmax(0, 1fr); } }
+
+.pinned__aside { position: sticky; top: calc(var(--nav-h) + 3rem); align-self: start; }
+@media (max-width: 58rem) { .pinned__aside { position: static; } }
+
+.lab__name { font-size: var(--t-h3); font-weight: 600; }
+.lab__meta { color: var(--ink-2); margin-top: 0.5rem; }
+.lab__meta a { color: var(--ink-1); }
+.lab__when {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  margin-top: 1.25rem;
+  font-family: var(--font-mono); font-size: var(--t-small); color: var(--ink-3);
+}
+.lab__when .live {
+  width: 0.45rem; height: 0.45rem; border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--good) 20%, transparent);
+}
+
+.bullets { display: grid; gap: 1px; background: var(--rule); border-block: 1px solid var(--rule); }
+.bullet {
+  background: var(--plane);
+  padding: clamp(1.4rem, 3vw, 2.1rem) 0;
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 36rem) { .bullet { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; } }
+.bullet__lead {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  padding-top: 0.3rem;
+}
+.bullet__text { color: var(--ink-2); line-height: 1.65; }
+.bullet__text em { font-style: italic; color: var(--ink-1); }
+
+/* ---- 5. publications ----------------------------------------------------- */
+.pub {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.75rem, 3.5vw, 2.75rem);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+.pub::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.6;
+}
+.pub__title { font-size: clamp(1.15rem, 2.2vw, 1.6rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; }
+.pub__title span { color: var(--ink-3); font-weight: 400; font-size: 0.7em; }
+.pub__meta { color: var(--ink-2); }
+.pub__tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-2);
+}
+.tag--wip { border-color: transparent; background: var(--accent-wash); color: var(--accent-ink); }
+
+/* ---- 6. teaching --------------------------------------------------------- */
+.teaching { display: grid; gap: 1px; background: var(--rule); border-block: 1px solid var(--rule); }
+.course {
+  background: var(--plane);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem 2rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+  align-items: baseline;
+  transition: background-color var(--dur) var(--ease-out);
+}
+.course:hover { background: var(--surface); }
+@media (max-width: 44rem) { .course { grid-template-columns: minmax(0, 1fr); } }
+.course__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.9rem; }
+.course__name { font-size: var(--t-h3); font-weight: 600; letter-spacing: -0.02em; }
+.course__role { color: var(--ink-2); font-style: italic; font-family: var(--font-serif); font-size: 1.05rem; }
+.course__when { font-family: var(--font-mono); font-size: var(--t-small); color: var(--ink-3); white-space: nowrap; }
+.course__body { grid-column: 1 / -1; display: grid; gap: 0.75rem; max-width: var(--measure); }
+.course__note { color: var(--ink-2); }
+.course__instructors { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.course__instructors li {
+  font-size: var(--t-micro);
+  font-family: var(--font-mono);
+  color: var(--ink-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  padding: 0.25rem 0.5rem;
+}
+.offerings {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent-wash);
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+}
+
+/* ---- 7. honors ----------------------------------------------------------- */
+.honor {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+}
+@media (max-width: 44rem) { .honor { grid-template-columns: minmax(0, 1fr); } }
+/* Hero figure — same sans as everything else, proportional figures. */
+.honor__figure {
+  font-size: clamp(5rem, 16vw, 11rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.85;
+  color: var(--ink-1);
+  display: flex;
+  align-items: baseline;
+}
+.honor__figure sup {
+  font-size: 0.3em;
+  font-weight: 500;
+  letter-spacing: 0;
+  top: -1.6em;
+  color: var(--accent);
+}
+.honor__body { display: grid; gap: 1rem; max-width: var(--measure); }
+.honor__title { font-size: var(--t-h3); font-weight: 600; }
+.honor__detail { color: var(--ink-2); font-size: var(--t-lead); line-height: 1.5; }
+.honor__detail strong { color: var(--ink-1); font-weight: 600; }
+.honor__scale { display: flex; align-items: center; gap: 0.75rem; color: var(--ink-3); font-size: var(--t-small); }
+.honor__scale-bar {
+  flex: 1;
+  max-width: 14rem;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: var(--rule);
+  position: relative;
+  overflow: hidden;
+}
+.honor__scale-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2.5%;      /* top ~0.02% of the field — shown as a visible sliver */
+  min-width: 4px;
+  background: var(--accent);
+  border-radius: var(--r-pill);
+}
+
+/* ---- 8. skills ----------------------------------------------------------- */
+.skills { display: grid; gap: 0; }
+.skillrow {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: 1rem 2rem;
+  padding-block: clamp(1.25rem, 2.5vw, 1.75rem);
+  align-items: baseline;
+  border-bottom: 1px solid var(--rule);
+}
+.skillrow:first-child { border-top: 1px solid var(--rule); }
+@media (max-width: 44rem) { .skillrow { grid-template-columns: minmax(0, 1fr); } }
+.skillrow__label { font-weight: 600; letter-spacing: -0.015em; }
+.skillrow__items { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.skillrow__items li {
+  font-size: 0.875rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  transition: color var(--dur-fast), border-color var(--dur-fast), background-color var(--dur-fast);
+}
+.skillrow__items li:hover { color: var(--ink-1); border-color: var(--accent); background: var(--accent-wash); }
+
+/* ---- 10. contact --------------------------------------------------------- */
+.contact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+@media (max-width: 54rem) { .contact { grid-template-columns: minmax(0, 1fr); } }
+
+.contact__list { display: grid; gap: 0; }
+.contact__row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+}
+.contact__row:first-child { border-top: 1px solid var(--rule); }
+.contact__key { font-family: var(--font-mono); font-size: var(--t-micro); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.contact__val { font-size: 1.0625rem; word-break: break-word; }
+
+.refs { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: var(--r-lg); overflow: hidden; }
+.ref { background: var(--surface); padding: 1.25rem 1.4rem; display: grid; gap: 0.3rem; }
+.ref__name { font-weight: 600; display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+.ref__badge { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-wash); padding: 0.2rem 0.45rem; border-radius: var(--r-sm); }
+.ref__affil { color: var(--ink-3); font-size: 0.875rem; line-height: 1.5; }
+.ref__email { font-size: 0.875rem; font-family: var(--font-mono); }

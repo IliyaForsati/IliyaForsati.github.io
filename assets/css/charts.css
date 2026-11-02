@@ -1,0 +1,320 @@
+/* ============================================================================
+   Stat tiles, charts, and the transcript table.
+
+   Mark specs follow the dataviz skill: bars <=24px with a 4px rounded data-end
+   square at the baseline, 2px lines with round joins, markers >=8px carrying a
+   2px surface ring, hairline solid gridlines, and text in ink tokens — never
+   in a series colour.
+   ========================================================================= */
+
+/* ---- KPI row of stat tiles ---------------------------------------------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.tile {
+  background: var(--surface);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  position: relative;
+}
+.tile__label {
+  font-size: var(--t-small);
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* The colour key sits beside the text; the text itself stays in ink. */
+.tile__key {
+  width: 0.5rem; height: 0.5rem; border-radius: 2px;
+  background: var(--series-1);
+  flex: none;
+}
+.tile__value {
+  font-size: clamp(2.25rem, 4.5vw, 3.1rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  /* proportional figures — tabular would make these look loose at display size */
+  font-variant-numeric: proportional-nums;
+}
+.tile__value sub {
+  font-size: 0.32em;
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--ink-3);
+  vertical-align: baseline;
+  margin-left: 0.15em;
+  bottom: 0;
+}
+.tile__note { font-size: 0.8125rem; color: var(--ink-3); line-height: 1.5; }
+.tile__delta {
+  font-size: var(--t-small);
+  font-weight: 550;
+  color: var(--good);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.tile__delta svg { width: 0.75rem; height: 0.75rem; }
+
+/* The cohort benchmark is not a personal score — it reads as context. */
+.tile[data-benchmark='true'] { background: var(--surface-sunken); }
+.tile[data-benchmark='true'] .tile__value { color: var(--ink-2); font-weight: 500; }
+.tile[data-benchmark='true'] .tile__key { background: var(--ink-3); border-radius: 50%; }
+
+/* ---- chart shell --------------------------------------------------------- */
+.chart {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  display: grid;
+  gap: 1.25rem;
+  /* height grows with content so the x-axis band is never cut off */
+}
+.chart__head { display: grid; gap: 0.4rem; }
+.chart__title { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.015em; }
+.chart__sub { font-size: 0.875rem; color: var(--ink-3); line-height: 1.5; max-width: var(--measure); }
+
+.chart__legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+.chart__legend li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--ink-2); }
+.chart__swatch { width: 0.875rem; height: 2px; border-radius: 1px; flex: none; }
+.chart__swatch--dashed { background: var(--ink-3); height: 1px; }
+
+/* Wide charts scroll inside their own box — the page body never does. */
+.chart__scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+.chart__plot { width: 100%; min-width: 28rem; height: auto; display: block; overflow: visible; }
+.chart--bars .chart__plot { min-width: 20rem; }
+
+/* svg primitives */
+.ax-line { stroke: var(--rule-strong); stroke-width: 1; }
+.ax-grid { stroke: var(--rule); stroke-width: 1; }
+.ax-text { fill: var(--ink-3); font-size: 11px; font-family: var(--font-mono); }
+.ax-text--mid { text-anchor: middle; }
+.ax-text--end { text-anchor: end; }
+
+.ref-line { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.ref-text { fill: var(--ink-3); font-size: 10.5px; font-family: var(--font-mono); }
+
+.series-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.series-line--1 { stroke: var(--series-1); }
+.series-line--2 { stroke: var(--series-2); }
+
+.series-dot { r: 4; stroke: var(--surface); stroke-width: 2; }
+.series-dot--1 { fill: var(--series-1); }
+.series-dot--2 { fill: var(--series-2); }
+
+.end-label { fill: var(--ink-1); font-size: 12px; font-weight: 600; font-family: var(--font-sans); }
+
+.bar { fill: var(--series-1); }
+.bar-label { fill: var(--ink-1); font-size: 11.5px; font-weight: 600; font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+.bar-name { fill: var(--ink-2); font-size: 11.5px; font-family: var(--font-sans); }
+
+/* hover/focus layer */
+.hit { fill: transparent; cursor: crosshair; }
+.crosshair { stroke: var(--rule-strong); stroke-width: 1; opacity: 0; pointer-events: none; }
+.chart[data-active='true'] .crosshair { opacity: 1; }
+.focus-dot { opacity: 0; pointer-events: none; }
+.chart[data-active='true'] .focus-dot { opacity: 1; }
+.bar-group { cursor: pointer; }
+.bar-group:hover .bar, .bar-group:focus-visible .bar { fill: var(--blue-550); }
+:root[data-theme='dark'] .bar-group:hover .bar,
+:root[data-theme='dark'] .bar-group:focus-visible .bar { fill: var(--blue-300); }
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) .bar-group:hover .bar,
+  :root:where(:not([data-theme='light'])) .bar-group:focus-visible .bar { fill: var(--blue-300); }
+}
+
+/* tooltip */
+.tip {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  min-width: 10rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--r-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--rule-strong);
+  box-shadow: var(--shadow-pop);
+  font-size: 0.8125rem;
+  opacity: 0;
+  /* visibility, not just opacity: an absolutely-positioned box left at a stale
+     coordinate still counts toward document scroll width, which showed up as
+     phantom horizontal overflow after a viewport change. */
+  visibility: hidden;
+  transform: translate(-50%, -112%);
+  transition: opacity var(--dur-fast) linear, visibility var(--dur-fast) linear;
+}
+.tip[data-show='true'] { opacity: 1; visibility: visible; }
+.tip__title { font-weight: 600; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
+.tip__row { display: flex; align-items: center; gap: 0.5rem; justify-content: space-between; color: var(--ink-2); }
+.tip__row + .tip__row { margin-top: 0.2rem; }
+.tip__key { display: flex; align-items: center; gap: 0.4rem; }
+.tip__swatch { width: 0.625rem; height: 2px; border-radius: 1px; flex: none; }
+.tip__num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-1); font-weight: 600; }
+.chart-wrap { position: relative; }
+
+/* ---- transcript table ---------------------------------------------------- */
+.tcontrols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+.tsearch { position: relative; flex: 1 1 15rem; min-width: 0; }
+.tsearch svg {
+  position: absolute; left: 0.85rem; top: 50%; translate: 0 -50%;
+  width: 1rem; height: 1rem; color: var(--ink-3); pointer-events: none;
+}
+.tsearch input {
+  width: 100%;
+  padding: 0.65rem 0.9rem 0.65rem 2.5rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  color: var(--ink-1);
+  font-size: 0.9375rem;
+}
+.tsearch input::placeholder { color: var(--ink-3); }
+.tsearch input:focus-visible { border-color: var(--accent); }
+
+.tselect {
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.tswitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+  cursor: pointer;
+  user-select: none;
+  padding: 0.5rem 0.25rem;
+}
+.tswitch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.tswitch__track {
+  width: 2.25rem; height: 1.25rem;
+  border-radius: var(--r-pill);
+  background: var(--rule-strong);
+  position: relative;
+  transition: background-color var(--dur-fast);
+  flex: none;
+}
+.tswitch__track::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 1rem; height: 1rem;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.tswitch input:checked + .tswitch__track { background: var(--accent); }
+.tswitch input:checked + .tswitch__track::after { transform: translateX(1rem); }
+.tswitch input:focus-visible + .tswitch__track { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.tcount { font-family: var(--font-mono); font-size: var(--t-micro); color: var(--ink-3); margin-left: auto; }
+
+.tscroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.ttable { min-width: 40rem; font-size: 0.9rem; }
+.ttable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule-strong);
+  padding: 0.85rem 1rem;
+  font-size: var(--t-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ttable th button {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit;
+}
+.ttable th button:hover { color: var(--ink-1); }
+.ttable th[aria-sort] button { color: var(--ink-1); }
+.sort-arrow { opacity: 0; transition: opacity var(--dur-fast), transform var(--dur-fast); }
+.ttable th[aria-sort] .sort-arrow { opacity: 1; }
+.ttable th[aria-sort='descending'] .sort-arrow { transform: rotate(180deg); }
+
+.ttable tbody td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+.ttable tbody tr:last-child td { border-bottom: 0; }
+.ttable tbody tr { transition: background-color var(--dur-fast); }
+.ttable tbody tr:hover { background: var(--surface-raised); }
+.ttable tbody tr[data-inactive='true'] td { color: var(--ink-3); }
+
+.td-code { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--ink-3); white-space: nowrap; }
+.td-title { color: var(--ink-1); min-width: 14rem; }
+.td-title .grad {
+  font-family: var(--font-mono); font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent-ink); background: var(--accent-wash);
+  padding: 0.15rem 0.35rem; border-radius: 3px; margin-left: 0.5rem; vertical-align: 0.1em;
+}
+.td-sem { color: var(--ink-2); white-space: nowrap; font-size: 0.8125rem; }
+.td-num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); white-space: nowrap; }
+.td-grade { font-weight: 600; color: var(--ink-1); }
+.td-grade[data-perfect='true'] { color: var(--good); }
+.td-grade[data-code] { font-weight: 500; color: var(--ink-3); font-size: 0.8125rem; }
+
+/* grade bar behind the number — a sequential wash, not a second colour */
+.gradebar {
+  display: inline-block;
+  width: 3rem;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--rule);
+  overflow: hidden;
+  vertical-align: middle;
+  margin-right: 0.6rem;
+}
+.gradebar i { display: block; height: 100%; background: var(--series-1); border-radius: 2px; }
+
+.tempty { padding: 3rem 1rem; text-align: center; color: var(--ink-3); }
+
+/* semester group headers, shown in "by semester" mode */
+.tgroup td {
+  background: var(--surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  padding: 0.6rem 1rem;
+  position: sticky;
+  top: 2.6rem;
+  z-index: 1;
+}
+.tgroup td span { color: var(--ink-3); text-transform: none; letter-spacing: 0; margin-left: 0.75rem; }
+
+/* ---- legend/footnote under the transcript ------------------------------- */
+.tlegend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1rem; font-size: 0.8125rem; color: var(--ink-3); }
+.tlegend dt { font-family: var(--font-mono); color: var(--ink-2); display: inline; font-weight: 600; }
+.tlegend dd { display: inline; margin: 0 0 0 0.4rem; }
+.tlegend div { flex: 0 1 auto; }

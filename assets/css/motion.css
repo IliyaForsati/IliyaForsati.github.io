@@ -1,0 +1,53 @@
+/* ============================================================================
+   Reveal primitives.
+
+   Everything here is gated on `html.js` — set by an inline script in <head>.
+   Without JS (or with it disabled) nothing is ever hidden, so the whole résumé
+   is readable by scrolling alone. Reduced motion short-circuits to the same
+   place.
+   ========================================================================= */
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 1.75rem, 0);
+  will-change: opacity, transform;
+}
+.js [data-reveal='fade'] { transform: none; }
+.js [data-reveal='left'] { transform: translate3d(-1.5rem, 0, 0); }
+.js [data-reveal='scale'] { transform: scale(0.97); }
+
+/* GSAP clears the inline props when a reveal finishes; this is the resting
+   state for anything it has already played. */
+.js [data-reveal].is-in { opacity: 1; transform: none; }
+
+/* Hero portrait reveal — the mask is only closed once JS takes over. */
+.js .hero__portrait { clip-path: inset(0 0 100% 0 round var(--r-lg)); }
+@media (max-width: 54rem) { .js .hero__portrait { clip-path: none; } }
+
+/* Character-level hero reveal. The heading is hidden as a whole until the
+   split is built, then its characters animate in from explicit values. Never
+   put the start state on .char itself: gsap's .from() reads the current value
+   as the END value, so a CSS-hidden char animates 0 -> 0 and never appears. */
+.js .hero__name { opacity: 0; }
+.js .hero__name.is-ready { opacity: 1; }
+
+/* Magnetic buttons get their transform from JS; keep CSS out of the way. */
+.magnetic { will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal],
+  .js [data-reveal].is-in {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .js .hero__portrait { clip-path: none !important; }
+  .js .hero__name,
+  .js .hero__name .char { opacity: 1 !important; transform: none !important; }
+  .magnetic { transform: none !important; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
