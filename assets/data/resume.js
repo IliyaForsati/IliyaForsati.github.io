@@ -15,6 +15,12 @@ export const PROFILE = {
   phone: { cc: '+98', parts: ['915', '367', '5903'] },
   github: 'IliyaForsati',
   cv: 'assets/cv.pdf',
+  /**
+   * Path to the hero portrait, or null for the monogram fallback.
+   * Set this to 'assets/img/portrait.jpg' once the file is in place — it is
+   * opt-in so the live site never requests an image that isn't there.
+   */
+  portrait: null,
   tagline:
     'Trustworthy and secure machine learning — probing where large language models break, and building the methods that find it first.',
 };
