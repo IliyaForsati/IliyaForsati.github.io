@@ -8,6 +8,7 @@
  */
 
 import { $, reduceMotion, imageLoads } from './util.js';
+import { PROFILE } from '../data/resume.js';
 import { renderAll } from './render.js';
 import { initCharts } from './charts.js';
 import { initTranscript } from './transcript.js';
@@ -26,11 +27,23 @@ const loadScript = (src) =>
     document.head.append(s);
   });
 
-/** Swap the monogram for the portrait only once the image really decodes. */
+/**
+ * Insert the portrait only when one is configured, and only keep it once the
+ * image actually decodes — a missing or broken file leaves the monogram
+ * standing rather than an empty frame. With PROFILE.portrait null, no request
+ * is made at all.
+ */
 async function initPortrait() {
   const fig = $('#heroPortrait');
-  const img = $('#portraitImg');
-  if (!fig || !img) return;
+  if (!fig || !PROFILE.portrait) return;
+
+  const img = new Image();
+  img.id = 'portraitImg';
+  img.src = PROFILE.portrait;
+  img.alt = PROFILE.fullName;
+  img.decoding = 'async';
+  fig.prepend(img);
+
   const ok = await imageLoads(img);
   fig.dataset.empty = String(!ok);
   if (!ok) img.remove();

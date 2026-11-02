@@ -33,11 +33,16 @@ Replacing the PDF is just `assets/cv.pdf`.
 
 ### Adding your photo
 
-Drop a portrait at **`assets/img/portrait.jpg`** and it appears automatically — no
-code change. Until then the hero shows an `IF` monogram, which is a deliberate
-fallback rather than a broken image. A portrait-orientation crop around 800×1000
-works best. (While no file is present the browser console logs one 404 for it; that
-is expected and disappears once the photo is added.)
+Two steps:
+
+1. Put the image at **`assets/img/portrait.jpg`**
+2. In `assets/data/resume.js`, set `portrait: 'assets/img/portrait.jpg'`
+   (it ships as `null`)
+
+A portrait-orientation crop around 800×1000 works best. Until then the hero shows
+an `IF` monogram, which is a deliberate fallback rather than a broken image — and
+because the path is opt-in, the site makes no request for a photo that isn't there.
+If the file is ever missing or fails to decode, the monogram comes back on its own.
 
 ---
 
