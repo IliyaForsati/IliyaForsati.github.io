@@ -91,7 +91,9 @@ export function initNav({ scrollTo }) {
     const lr = list.getBoundingClientRect();
     const r = link.getBoundingClientRect();
     indicator.style.width = `${r.width}px`;
-    indicator.style.transform = `translate(${r.left - lr.left}px, -50%)`;
+    // Horizontal only: the CSS `translate: 0 -50%` already centres it vertically,
+    // and the two compose — repeating -50% here lifted the pill above the text.
+    indicator.style.transform = `translateX(${r.left - lr.left}px)`;
     indicator.style.opacity = '1';
   };
 
