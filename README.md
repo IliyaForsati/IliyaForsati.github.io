@@ -75,8 +75,8 @@ through Jekyll.
 ```
 index.html              the whole page
 assets/
-  css/   tokens  base  layout  sections  charts  motion
-  js/    main · render · charts · transcript · nav · motion · lattice · util
+  css/   tokens  base  layout  sections  charts  motion  cat
+  js/    main · render · charts · transcript · nav · motion · lattice · cat · util
   data/  resume.js · transcript.js      ← edit these
   fonts/ self-hosted woff2 (Inter, JetBrains Mono, Instrument Serif)
   cv.pdf
@@ -96,6 +96,19 @@ reads identically without them. If the libraries fail to load, or the visitor ha
 *Reduce Motion* enabled, or JavaScript is off entirely, every word is still on
 screen — nothing is hidden behind an animation that might not run. All three paths
 are covered by the test suite.
+
+**The cat** (`assets/js/cat.js`, `assets/css/cat.css`) is a hand-drawn inline SVG
+with no dependencies. It sits in the corner for the whole page and comes to rest on the
+footer. That placement is CSS `position: sticky`, so it needs no scroll JavaScript.
+
+- Its tail is a simulated chain of segments that swishes harder the faster you scroll.
+- Its eyes follow the pointer.
+- It dozes off when left alone.
+- Hover makes it squint happily; a click makes it hop and shows a heart.
+
+It is decorative (`aria-hidden`), costs well under a millisecond a frame, pauses when
+the tab is hidden, and sits still under *Reduce Motion*. Its colours are the `--cat-*`
+tokens in `tokens.css`.
 
 **Charts are hand-built inline SVG**, not a charting library:
 

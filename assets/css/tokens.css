@@ -48,6 +48,17 @@
   --lattice-opacity: 0.5;
   --portrait-blend: normal;
 
+  /* ---- the cat (assets/js/cat.js) — black cat on light, pale cat on dark -- */
+  --cat-fur: #171716;
+  --cat-inner: #4d3c40;
+  --cat-eye: #e3b341;
+  --cat-pupil: #0b0b0b;
+  --cat-nose: #c98a8f;
+  --cat-line: rgba(255, 255, 255, 0.28);
+  --cat-whisker: #9b9a94;
+  --cat-squint: #e3b341;
+  --cat-heart: #e0566f;
+
   /* ---- type -------------------------------------------------------------- */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
@@ -119,6 +130,16 @@
     --lattice-opacity: 1;
     --portrait-blend: luminosity;
 
+    --cat-fur: #cfcdc4;
+    --cat-inner: #d9a9ae;
+    --cat-eye: #e3b341;
+    --cat-pupil: #0b0b0b;
+    --cat-nose: #b06b72;
+    --cat-line: rgba(0, 0, 0, 0.25);
+    --cat-whisker: #6d6c66;
+    --cat-squint: #2a2a27;
+    --cat-heart: #e0566f;
+
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
     --shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.5), 0 16px 48px -16px rgba(0, 0, 0, 0.8);
   }
@@ -151,6 +172,16 @@
   --grain-opacity: 0.055;
   --lattice-opacity: 1;
   --portrait-blend: luminosity;
+
+  --cat-fur: #cfcdc4;
+  --cat-inner: #d9a9ae;
+  --cat-eye: #e3b341;
+  --cat-pupil: #0b0b0b;
+  --cat-nose: #b06b72;
+  --cat-line: rgba(0, 0, 0, 0.25);
+  --cat-whisker: #6d6c66;
+  --cat-squint: #2a2a27;
+  --cat-heart: #e0566f;
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
   --shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.5), 0 16px 48px -16px rgba(0, 0, 0, 0.8);

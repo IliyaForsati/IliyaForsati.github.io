@@ -15,6 +15,7 @@ import { initTranscript } from './transcript.js';
 import { initNav } from './nav.js';
 import { initMotion, settle } from './motion.js';
 import { initLattice } from './lattice.js';
+import { initCat } from './cat.js';
 
 /** Load a classic script, resolving false rather than throwing on failure. */
 const loadScript = (src) =>
@@ -92,6 +93,8 @@ async function boot() {
   initTranscript();
   initCharts();
   initPortrait();
+  // The cat is self-contained (own loop, no libraries) and purely decorative.
+  initCat();
 
   // 2. Optional libraries.
   const wantsMotion = !reduceMotion();
